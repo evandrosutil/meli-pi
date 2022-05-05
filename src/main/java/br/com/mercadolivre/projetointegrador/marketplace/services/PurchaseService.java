@@ -3,6 +3,7 @@ package br.com.mercadolivre.projetointegrador.marketplace.services;
 import br.com.mercadolivre.projetointegrador.marketplace.dtos.CartProductDTO;
 import br.com.mercadolivre.projetointegrador.marketplace.dtos.PurchaseProductResponseDTO;
 import br.com.mercadolivre.projetointegrador.marketplace.dtos.PurchaseResponseDTO;
+import br.com.mercadolivre.projetointegrador.marketplace.dtos.SalesDTO;
 import br.com.mercadolivre.projetointegrador.marketplace.enums.PurchaseStatusCodeEnum;
 import br.com.mercadolivre.projetointegrador.marketplace.exceptions.OutOfStockException;
 import br.com.mercadolivre.projetointegrador.marketplace.exceptions.NotFoundException;
@@ -14,12 +15,15 @@ import br.com.mercadolivre.projetointegrador.marketplace.repository.PurchaseRepo
 import br.com.mercadolivre.projetointegrador.warehouse.service.BatchService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,6 +68,9 @@ public class PurchaseService {
       adPurchase.setQuantity(product.getQuantity());
       adPurchase.setDiscount(ad.getDiscount());
       adPurchase.setPurchase(purchase);
+      adPurchase.setSellerId(ad.getSellerId());
+      adPurchase.setDate(new Date());
+      adPurchase.setPrice(product.getUnitPrice().multiply(BigDecimal.valueOf(product.getQuantity())));
 
       adPurchases.add(adPurchase);
     }
@@ -122,5 +129,17 @@ public class PurchaseService {
     purchaseResponse.setProducts(getProducts(purchase));
 
     return purchaseResponse;
+  }
+
+  public List<SalesDTO> listAllSales(Long sellerId) {
+    List<AdPurchase> adPurchases = adPurchaseRepository.findAllBySellerId(sellerId);
+
+    List<SalesDTO> sales = new ArrayList<>();
+    for (AdPurchase adPurchase:
+         adPurchases) {
+      sales.add(SalesDTO.adPurchaseToSales(adPurchase));
+    }
+
+    return sales;
   }
 }

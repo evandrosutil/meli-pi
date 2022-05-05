@@ -1,6 +1,7 @@
 package br.com.mercadolivre.projetointegrador.marketplace.controllers;
 
 import br.com.mercadolivre.projetointegrador.marketplace.dtos.PurchaseResponseDTO;
+import br.com.mercadolivre.projetointegrador.marketplace.dtos.SalesDTO;
 import br.com.mercadolivre.projetointegrador.marketplace.exceptions.NotFoundException;
 import br.com.mercadolivre.projetointegrador.marketplace.exceptions.OutOfStockException;
 import br.com.mercadolivre.projetointegrador.marketplace.exceptions.UnauthorizedException;
@@ -91,5 +92,12 @@ public class PurchaseController implements SecuredMarketplaceRestController {
       throws NotFoundException, UnauthorizedException {
     PurchaseResponseDTO purchaseResponse = purchaseService.changeStatus(purchaseId, buyerId);
     return ResponseEntity.ok(purchaseResponse);
+  }
+
+  @GetMapping("/seller/{sellerId}")
+  public ResponseEntity<?> listSellerSales(@PathVariable Long sellerId) {
+    List<SalesDTO> sales = purchaseService.listAllSales(sellerId);
+
+    return ResponseEntity.ok(sales);
   }
 }
