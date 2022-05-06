@@ -130,4 +130,42 @@ public class PurchaseServiceTests {
 
     Assertions.assertEquals(PurchaseStatusCodeEnum.FINALIZADO, purchaseResponse.getStatusCode());
   }
+
+  @Test
+  @DisplayName(
+    "Given a seller id, when call listSales, then findAllSellerId should be called once")
+  public void shouldRunListSales() {
+    AdPurchase adPurchase = new AdPurchase();
+    adPurchase.setSellerId(10L);
+    adPurchase.setAd(new Ad());
+    adPurchase.setQuantity(10);
+
+    List<AdPurchase> adPurchases = List.of(adPurchase);
+
+    Mockito.when(adPurchaseRepository.findAllBySellerId(Mockito.anyLong())).thenReturn(adPurchases);
+
+    purchaseService.listSales(10L);
+
+    Mockito.verify(adPurchaseRepository, Mockito.times(1)).findAllBySellerId(10L);
+  }
+
+  @Test
+  @DisplayName(
+    "Given a seller id, when call getProductSales, then findAllBySellerIdAndAdId should be called once")
+  public void shouldRunGetProductSales() throws NotFoundException {
+    AdPurchase adPurchase = new AdPurchase();
+    adPurchase.setSellerId(10L);
+    Ad ad = new Ad();
+    ad.setId(3L);
+    adPurchase.setAd(ad);
+    adPurchase.setQuantity(10);
+
+    List<AdPurchase> adPurchases = List.of(adPurchase);
+
+    Mockito.when(adPurchaseRepository.findAllBySellerIdAndAdId(Mockito.anyLong(), Mockito.anyLong())).thenReturn(adPurchases);
+
+    purchaseService.getProductSales(10L, 3L);
+
+    Mockito.verify(adPurchaseRepository, Mockito.times(1)).findAllBySellerIdAndAdId(10L, 3L);
+  }
 }

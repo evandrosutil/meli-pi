@@ -4,9 +4,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity(name = "ad_purchase")
 @Getter
@@ -32,4 +34,10 @@ public class AdPurchase {
   private BigDecimal price;
 
   private Integer discount;
+
+  @Column(name = "seller_id")
+  private Long sellerId;
+
+  @CreatedDate
+  private LocalDate date;
 }
