@@ -68,7 +68,7 @@ public class PurchaseService {
       adPurchase.setDiscount(ad.getDiscount());
       adPurchase.setPurchase(purchase);
       adPurchase.setSellerId(ad.getSellerId());
-      adPurchase.setDate(LocalDate.now().minusDays(20));
+      adPurchase.setDate(LocalDate.now());
       adPurchase.setPrice(product.getUnitPrice().multiply(BigDecimal.valueOf(product.getQuantity())));
 
       adPurchases.add(adPurchase);
