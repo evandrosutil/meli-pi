@@ -28,6 +28,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,6 +82,9 @@ public class PurchaseServiceTests {
       adPurchase.setQuantity(product.getQuantity());
       adPurchase.setDiscount(ad.getDiscount());
       adPurchase.setPurchase(purchase);
+      adPurchase.setSellerId(ad.getSellerId());
+      adPurchase.setPrice(product.getUnitPrice().multiply(BigDecimal.valueOf(product.getQuantity())));
+      adPurchase.setDate(LocalDate.now());
 
       adPurchases.add(adPurchase);
     }
