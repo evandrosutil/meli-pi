@@ -93,11 +93,4 @@ public class PurchaseController implements SecuredMarketplaceRestController {
     PurchaseResponseDTO purchaseResponse = purchaseService.changeStatus(purchaseId, buyerId);
     return ResponseEntity.ok(purchaseResponse);
   }
-
-  @GetMapping("/seller/{sellerId}")
-  public ResponseEntity<?> listSellerSales(@PathVariable Long sellerId) {
-    List<SalesDTO> sales = purchaseService.listAllSales(sellerId);
-
-    return ResponseEntity.ok(sales);
-  }
 }

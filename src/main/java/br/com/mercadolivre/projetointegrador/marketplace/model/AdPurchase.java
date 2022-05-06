@@ -8,7 +8,7 @@ import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity(name = "ad_purchase")
 @Getter
@@ -38,6 +38,6 @@ public class AdPurchase {
   @Column(name = "seller_id")
   private Long sellerId;
 
-  @Temporal(TemporalType.TIMESTAMP) @CreatedDate
-  private Date date;
+  @CreatedDate
+  private LocalDate date;
 }

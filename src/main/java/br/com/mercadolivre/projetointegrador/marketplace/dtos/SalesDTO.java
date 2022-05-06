@@ -6,7 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,16 +17,24 @@ public class SalesDTO {
   private String adName;
   private Integer totalQuantity;
   private BigDecimal totalSale;
-  private Date date;
+  private LocalDate date;
 
-  public static SalesDTO adPurchaseToSales(AdPurchase adPurchase) {
+  private static SalesDTO adPurchaseToSale(AdPurchase adPurchase) {
     SalesDTO sale = new SalesDTO();
     sale.adName = adPurchase.getAd().getName();
     sale.totalQuantity = adPurchase.getQuantity();
     sale.totalSale = adPurchase.getPrice();
     sale.date = adPurchase.getDate();
 
-
     return sale;
+  }
+
+  public static List<SalesDTO> adPurchasesToSales(List<AdPurchase> adPurchases) {
+    List<SalesDTO> sales = new ArrayList<>();
+    for (AdPurchase adPurchase:
+      adPurchases) {
+      sales.add(adPurchaseToSale(adPurchase));
+    }
+    return sales;
   }
 }

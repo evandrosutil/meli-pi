@@ -15,15 +15,14 @@ import br.com.mercadolivre.projetointegrador.marketplace.repository.PurchaseRepo
 import br.com.mercadolivre.projetointegrador.warehouse.service.BatchService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,7 +68,7 @@ public class PurchaseService {
       adPurchase.setDiscount(ad.getDiscount());
       adPurchase.setPurchase(purchase);
       adPurchase.setSellerId(ad.getSellerId());
-      adPurchase.setDate(new Date());
+      adPurchase.setDate(LocalDate.now().minusDays(20));
       adPurchase.setPrice(product.getUnitPrice().multiply(BigDecimal.valueOf(product.getQuantity())));
 
       adPurchases.add(adPurchase);
@@ -131,15 +130,36 @@ public class PurchaseService {
     return purchaseResponse;
   }
 
-  public List<SalesDTO> listAllSales(Long sellerId) {
+  public List<SalesDTO> listSales(Long sellerId) {
     List<AdPurchase> adPurchases = adPurchaseRepository.findAllBySellerId(sellerId);
 
-    List<SalesDTO> sales = new ArrayList<>();
-    for (AdPurchase adPurchase:
-         adPurchases) {
-      sales.add(SalesDTO.adPurchaseToSales(adPurchase));
-    }
+    return SalesDTO.adPurchasesToSales(adPurchases);
+  }
 
-    return sales;
+  public List<SalesDTO> listSales(Long sellerId, Integer days) {
+    if (days == null) {
+      return listSales(sellerId);
+    }
+    List<AdPurchase> adPurchases = adPurchaseRepository.findAllBySellerIdAndDateGreaterThanEqual(sellerId, LocalDate.now().minusDays(days));
+    return SalesDTO.adPurchasesToSales(adPurchases);
+  }
+
+  public List<SalesDTO> getProductSales(Long sellerId, Long adId) throws NotFoundException {
+    List<AdPurchase> adPurchases = adPurchaseRepository.findAllBySellerIdAndAdId(sellerId, adId);
+    if (adPurchases.isEmpty()) {
+      throw new NotFoundException("Nenhuma venda encontrada para o anúncio.");
+    }
+    return SalesDTO.adPurchasesToSales(adPurchases);
+  }
+
+  public List<SalesDTO> getProductSales(Long sellerId, Long adId, Integer days) throws NotFoundException {
+    if (days == null) {
+      return getProductSales(sellerId, adId);
+    }
+    List<AdPurchase> adPurchases = adPurchaseRepository.findAllBySellerIdAndAdIdAndDateGreaterThanEqual(sellerId, adId, LocalDate.now().minusDays(days));
+    if (adPurchases.isEmpty()) {
+      throw new NotFoundException("Nenhuma venda encontrada para o anúncio.");
+    }
+    return SalesDTO.adPurchasesToSales(adPurchases);
   }
 }
